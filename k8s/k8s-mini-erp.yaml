@@ -20,11 +20,11 @@ spec:
             - containerPort: 8080
           env:
             - name: SPRING_DATASOURCE_URL
-              value: mysql://localhost:3306/mini_erp
+              value: mysql://168.144.102.251:3306/mini_erp
             - name: SPRING_DATASOURCE_USERNAME
-              value: root
+              value: erpuser
             - name: SPRING_DATASOURCE_PASSWORD
-              value: Vasco1token2!
+              value: erp123
 ---
 apiVersion: v1
 kind: Service
