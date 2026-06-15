@@ -12,22 +12,48 @@ public class OrderService {
 
     private final ProductRepository productRepository;
     private final SalesOrderRepository salesOrderRepository;
+    private final IncidentService incidentService;
 
     public OrderService(ProductRepository productRepository,
-                        SalesOrderRepository salesOrderRepository) {
+                        SalesOrderRepository salesOrderRepository,
+                        IncidentService incidentService) {
         this.productRepository = productRepository;
         this.salesOrderRepository = salesOrderRepository;
+        this.incidentService = incidentService;
     }
 
     public String createOrder(SalesOrderRequest request) {
 
         Product product =
                 productRepository.findById(request.getSku())
-                        .orElseThrow(() ->
-                                new RuntimeException("Product not found"));
+                        .orElse(null);
+
+        if (product == null) {
+
+            incidentService.createIncident(
+                    "MINI_ERP",
+                    request.getOrderId(),
+                    "PRODUCT_NOT_FOUND",
+                    "P3",
+                    "L1_SUPPORT",
+                    "Sales order failed because SKU does not exist in product master data"
+            );
+
+            return "Order Failed: Product not found. Incident ticket created.";
+        }
 
         if (product.getInventoryQty() < request.getQty()) {
-            return "Insufficient inventory";
+
+            incidentService.createIncident(
+                    "MINI_ERP",
+                    request.getOrderId(),
+                    "INSUFFICIENT_INVENTORY",
+                    "P3",
+                    "L1_SUPPORT",
+                    "Sales order failed because requested quantity is greater than available inventory"
+            );
+
+            return "Order Failed: Insufficient inventory. Incident ticket created.";
         }
 
         product.setInventoryQty(

@@ -2,6 +2,7 @@ package com.example.minierpsimulator.controller;
 
 import com.example.minierpsimulator.dto.SalesOrderRequest;
 import com.example.minierpsimulator.entity.Product;
+import com.example.minierpsimulator.repository.IncidentTicketRepository;
 import com.example.minierpsimulator.repository.ProductRepository;
 import com.example.minierpsimulator.service.OrderService;
 import org.springframework.stereotype.Controller;
@@ -15,18 +16,19 @@ public class WebController {
 
     private final ProductRepository productRepository;
     private final OrderService orderService;
+    private final IncidentTicketRepository incidentTicketRepository;
 
     public WebController(ProductRepository productRepository,
-                         OrderService orderService) {
+                         OrderService orderService,
+                         IncidentTicketRepository incidentTicketRepository) {
         this.productRepository = productRepository;
         this.orderService = orderService;
+        this.incidentTicketRepository = incidentTicketRepository;
     }
 
     @GetMapping("/")
     public String home(Model model) {
-        List<Product> products = productRepository.findAll();
-        model.addAttribute("products", products);
-        model.addAttribute("orderRequest", new SalesOrderRequest());
+        loadDashboard(model);
         return "index";
     }
 
@@ -36,10 +38,17 @@ public class WebController {
 
         String result = orderService.createOrder(orderRequest);
 
+        loadDashboard(model);
         model.addAttribute("message", result);
-        model.addAttribute("products", productRepository.findAll());
-        model.addAttribute("orderRequest", new SalesOrderRequest());
 
         return "index";
+    }
+
+    private void loadDashboard(Model model) {
+        List<Product> products = productRepository.findAll();
+
+        model.addAttribute("products", products);
+        model.addAttribute("incidents", incidentTicketRepository.findAll());
+        model.addAttribute("orderRequest", new SalesOrderRequest());
     }
 }
