@@ -11,9 +11,12 @@ import java.util.UUID;
 public class IncidentService {
 
     private final IncidentTicketRepository incidentTicketRepository;
+    private final AlertService alertService;
 
-    public IncidentService(IncidentTicketRepository incidentTicketRepository) {
+    public IncidentService(IncidentTicketRepository incidentTicketRepository,
+                           AlertService alertService) {
         this.incidentTicketRepository = incidentTicketRepository;
+        this.alertService = alertService;
     }
 
     public IncidentTicket createIncident(String sourceSystem,
@@ -23,7 +26,10 @@ public class IncidentService {
                                          String assignedGroup,
                                          String description) {
 
-        String incidentId = "INC-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+        String incidentId = "INC-" + UUID.randomUUID()
+                .toString()
+                .substring(0, 8)
+                .toUpperCase();
 
         IncidentTicket ticket = new IncidentTicket(
                 incidentId,
@@ -37,6 +43,16 @@ public class IncidentService {
                 LocalDateTime.now()
         );
 
-        return incidentTicketRepository.save(ticket);
+        IncidentTicket savedTicket = incidentTicketRepository.save(ticket);
+
+        alertService.createAlert(
+                savedTicket.getIncidentId(),
+                severity,
+                "TRANSACTION_FAILURE",
+                description,
+                assignedGroup
+        );
+
+        return savedTicket;
     }
 }

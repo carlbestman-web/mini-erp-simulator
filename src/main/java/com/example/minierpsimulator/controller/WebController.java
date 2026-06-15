@@ -2,6 +2,7 @@ package com.example.minierpsimulator.controller;
 
 import com.example.minierpsimulator.dto.SalesOrderRequest;
 import com.example.minierpsimulator.entity.Product;
+import com.example.minierpsimulator.repository.AlertEventRepository;
 import com.example.minierpsimulator.repository.IncidentTicketRepository;
 import com.example.minierpsimulator.repository.ProductRepository;
 import com.example.minierpsimulator.service.OrderService;
@@ -17,13 +18,16 @@ public class WebController {
     private final ProductRepository productRepository;
     private final OrderService orderService;
     private final IncidentTicketRepository incidentTicketRepository;
+    private final AlertEventRepository alertEventRepository;
 
     public WebController(ProductRepository productRepository,
                          OrderService orderService,
-                         IncidentTicketRepository incidentTicketRepository) {
+                         IncidentTicketRepository incidentTicketRepository,
+                         AlertEventRepository alertEventRepository) {
         this.productRepository = productRepository;
         this.orderService = orderService;
         this.incidentTicketRepository = incidentTicketRepository;
+        this.alertEventRepository = alertEventRepository;
     }
 
     @GetMapping("/")
@@ -49,6 +53,7 @@ public class WebController {
 
         model.addAttribute("products", products);
         model.addAttribute("incidents", incidentTicketRepository.findAll());
+        model.addAttribute("alerts", alertEventRepository.findAll());
         model.addAttribute("orderRequest", new SalesOrderRequest());
     }
 }
