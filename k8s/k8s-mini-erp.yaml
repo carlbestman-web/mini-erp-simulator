@@ -25,6 +25,14 @@ spec:
               value: erpuser
             - name: SPRING_DATASOURCE_PASSWORD
               value: erp123
+          volumeMounts:
+            - name: mini-erp-logs
+              mountPath: /logs
+      volumes:
+        - name: mini-erp-logs
+          hostPath:
+            path: /var/log/mini-erp
+            type: DirectoryOrCreate
 ---
 apiVersion: v1
 kind: Service
