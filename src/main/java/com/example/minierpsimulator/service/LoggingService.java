@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Service
 public class LoggingService {
 
-    private static final String LOG_FILE = "erp.log";
+    private static final String LOG_FILE = "/logs/erp.log";
 
     public void log(String level, String message) {
 
